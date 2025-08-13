@@ -161,10 +161,18 @@ const DoctorSearchPage = ({ defaultSpecialty = "" }) => {
         params: { location, specialty },
       });
       setDoctors(res.data);
+      setSearchAttempted(true); // Mark that search was attempted
+      console.log("Doctors found:", res.data);
     } catch (err) {
       console.error("Error fetching doctors:", err);
-      alert("Failed to fetch doctors. Please try again.");
+      // More user-friendly error message
+      if (err.code === 'ECONNREFUSED') {
+        alert("Cannot connect to server. Please make sure the backend is running.");
+      } else {
+        alert("Failed to fetch doctors. Please try again.");
+      }
       setCoords(null);
+      setSearchAttempted(true);
     } finally {
       setLoading(false);
     }

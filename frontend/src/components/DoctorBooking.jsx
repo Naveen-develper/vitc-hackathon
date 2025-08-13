@@ -127,8 +127,8 @@ Symptoms: ${appointmentData.symptoms}
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             Book Appointment
@@ -164,45 +164,46 @@ Symptoms: ${appointmentData.symptoms}
           </div>
         </div>
 
-        {/* Date Selection */}
-        <div className="mb-4">
-          <Label className="flex items-center gap-2 mb-2">
-            <Calendar size={16} />
-            Select Date
-          </Label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={handleDateChange}
-            minDate={new Date()}
-            dateFormat="MMMM dd, yyyy"
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholderText="Select appointment date"
-          />
-        </div>
+        {/* Date and Time Selection */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <Label className="flex items-center gap-2 mb-2">
+              <Calendar size={16} />
+              Select Date
+            </Label>
+            <DatePicker
+              selected={selectedDate}
+              onChange={handleDateChange}
+              minDate={new Date()}
+              dateFormat="MMMM dd, yyyy"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholderText="Select appointment date"
+            />
+          </div>
 
-        {/* Time Selection */}
-        <div className="mb-4">
-          <Label className="flex items-center gap-2 mb-2">
-            <Clock size={16} />
-            Select Time
-          </Label>
-          <div className="grid grid-cols-3 gap-2">
-            {timeSlots.filter(filterPassedTime).map((time) => (
-              <Button
-                key={time}
-                variant={selectedTime === time ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedTime(time)}
-                className="text-sm"
-              >
-                {time}
-              </Button>
-            ))}
+          <div>
+            <Label className="flex items-center gap-2 mb-2">
+              <Clock size={16} />
+              Select Time
+            </Label>
+            <div className="grid grid-cols-3 gap-2">
+              {timeSlots.filter(filterPassedTime).map((time) => (
+                <Button
+                  key={time}
+                  variant={selectedTime === time ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedTime(time)}
+                  className="text-sm"
+                >
+                  {time}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Patient Information */}
-        <div className="space-y-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <Label className="flex items-center gap-2 mb-2">
               <User size={16} />
@@ -230,7 +231,7 @@ Symptoms: ${appointmentData.symptoms}
             />
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <Label className="flex items-center gap-2 mb-2">
               <Mail size={16} />
               Email *
@@ -244,7 +245,7 @@ Symptoms: ${appointmentData.symptoms}
             />
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <Label className="mb-2">Symptoms/Reason for Visit</Label>
             <Textarea
               value={symptoms}
@@ -256,18 +257,18 @@ Symptoms: ${appointmentData.symptoms}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1"
+            className="flex-1 py-3"
           >
             Cancel
           </Button>
           <Button
             onClick={handleBooking}
             disabled={loading}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 py-3"
           >
             {loading ? (
               <div className="flex items-center gap-2">
