@@ -201,3 +201,4 @@ MIT License © 2025
 <!-- ## 🧭 Project Status
 
 > Alpha 🚧 – Core features implemented, refining UI/UX & robustness underway. -->
+# vitai-hackathon
