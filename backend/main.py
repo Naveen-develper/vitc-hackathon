@@ -16,6 +16,8 @@ import re
 import numpy as np
 from PIL import Image
 from geopy.geocoders import Nominatim
+from datetime import datetime, timedelta
+import json
 
 
 
@@ -42,7 +44,25 @@ client = genai.GenerativeModel('gemini-2.0-flash')
 
 # Global: store latest predictions for frontend polling
 latest_xray_results: dict = {}
-latest_reports = {}  
+latest_reports = {}
+
+# Appointment management
+class Appointment(BaseModel):
+    id: Optional[str] = None
+    doctor_id: str
+    doctor_name: str
+    doctor_email: str
+    patient_name: str
+    patient_phone: str
+    patient_email: str
+    appointment_date: str
+    appointment_time: str
+    symptoms: Optional[str] = None
+    status: str = "confirmed"
+    created_at: Optional[str] = None
+
+# In-memory storage for appointments (in production, use a database)
+appointments_db = []  
 
 # Startup: No ML models needed - using Gemini API only
 @asynccontextmanager
@@ -692,3 +712,94 @@ async def chat_with_report(request: ChatRequest):
         )
 
     return {"response": reply}
+
+# Appointment Management Endpoints
+@app.post("/appointments/", response_model=Appointment)
+async def create_appointment(appointment: Appointment):
+    """Create a new appointment"""
+    appointment.id = str(len(appointments_db) + 1)
+    appointment.created_at = datetime.now().isoformat()
+    appointments_db.append(appointment)
+    return appointment
+
+@app.get("/appointments/", response_model=List[Appointment])
+async def get_appointments(
+    doctor_id: Optional[str] = None,
+    patient_email: Optional[str] = None,
+    status: Optional[str] = None
+):
+    """Get appointments with optional filters"""
+    filtered_appointments = appointments_db
+    
+    if doctor_id:
+        filtered_appointments = [a for a in filtered_appointments if a.doctor_id == doctor_id]
+    if patient_email:
+        filtered_appointments = [a for a in filtered_appointments if a.patient_email == patient_email]
+    if status:
+        filtered_appointments = [a for a in filtered_appointments if a.status == status]
+    
+    return filtered_appointments
+
+@app.get("/appointments/{appointment_id}", response_model=Appointment)
+async def get_appointment(appointment_id: str):
+    """Get a specific appointment by ID"""
+    for appointment in appointments_db:
+        if appointment.id == appointment_id:
+            return appointment
+    raise HTTPException(status_code=404, detail="Appointment not found")
+
+@app.put("/appointments/{appointment_id}", response_model=Appointment)
+async def update_appointment(appointment_id: str, appointment_update: Appointment):
+    """Update an appointment"""
+    for i, appointment in enumerate(appointments_db):
+        if appointment.id == appointment_id:
+            appointment_update.id = appointment_id
+            appointment_update.created_at = appointment.created_at
+            appointments_db[i] = appointment_update
+            return appointment_update
+    raise HTTPException(status_code=404, detail="Appointment not found")
+
+@app.delete("/appointments/{appointment_id}")
+async def delete_appointment(appointment_id: str):
+    """Delete an appointment"""
+    for i, appointment in enumerate(appointments_db):
+        if appointment.id == appointment_id:
+            del appointments_db[i]
+            return {"message": "Appointment deleted successfully"}
+    raise HTTPException(status_code=404, detail="Appointment not found")
+
+@app.get("/appointments/doctor/{doctor_id}/availability")
+async def get_doctor_availability(doctor_id: str, date: str):
+    """Get doctor's available time slots for a specific date"""
+    try:
+        requested_date = datetime.strptime(date, "%Y-%m-%d")
+        if requested_date < datetime.now().date():
+            return {"available_slots": []}
+        
+        # Get existing appointments for this doctor on this date
+        existing_appointments = [
+            a for a in appointments_db 
+            if a.doctor_id == doctor_id 
+            and a.appointment_date == date
+            and a.status == "confirmed"
+        ]
+        
+        # Define available time slots (9 AM to 6 PM, 30-minute intervals)
+        all_slots = [
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+            "12:00", "12:30", "14:00", "14:30", "15:00", "15:30",
+            "16:00", "16:30", "17:00", "17:30", "18:00"
+        ]
+        
+        # Filter out booked slots
+        booked_times = [a.appointment_time for a in existing_appointments]
+        available_slots = [slot for slot in all_slots if slot not in booked_times]
+        
+        return {
+            "date": date,
+            "doctor_id": doctor_id,
+            "available_slots": available_slots,
+            "booked_slots": booked_times
+        }
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")

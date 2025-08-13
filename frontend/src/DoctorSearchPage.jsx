@@ -11,7 +11,9 @@ import {
   Mail,
   Loader2,
   Map as MapIcon,
+  Calendar,
 } from "lucide-react";
+import DoctorBooking from "./components/DoctorBooking";
 
 const DoctorSearchPage = ({ defaultSpecialty = "" }) => {
   const [location, setLocation] = useState("");
@@ -21,7 +23,9 @@ const DoctorSearchPage = ({ defaultSpecialty = "" }) => {
   const [loading, setLoading] = useState(false);
   const [geoError, setGeoError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const doctorsPerPage = 6;
+  const [doctorsPerPage] = useState(6);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [showBooking, setShowBooking] = useState(false);
 
   const paginatedDoctors = doctors.slice(
     (currentPage - 1) * doctorsPerPage,
@@ -98,6 +102,21 @@ const DoctorSearchPage = ({ defaultSpecialty = "" }) => {
         alert("Could not find location on map.");
         setCoords(null);
       }
+
+  const handleBooking = (doctor) => {
+    setSelectedDoctor(doctor);
+    setShowBooking(true);
+  };
+
+  const handleBookingSuccess = (appointmentData) => {
+    alert(`Appointment booked successfully with Dr. ${appointmentData.doctorName} on ${appointmentData.appointmentDate} at ${appointmentData.appointmentTime}!`);
+    // You can add additional success handling here
+  };
+
+  const closeBooking = () => {
+    setShowBooking(false);
+    setSelectedDoctor(null);
+  };
 
       // Fetch doctors from backend
       const res = await axios.get("http://127.0.0.1:8001/api/search-doctors", {
@@ -215,13 +234,21 @@ const DoctorSearchPage = ({ defaultSpecialty = "" }) => {
             <p className="text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
               <Phone size={16} /> {doc.phone}
             </p>
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 px-4 py-2"
-              onClick={() => window.open(`mailto:${doc.email || ""}`, "_blank")}
-            >
-              <Mail size={16} /> Contact
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 px-4 py-2"
+                onClick={() => window.open(`mailto:${doc.email || ""}`, "_blank")}
+              >
+                <Mail size={16} /> Contact
+              </Button>
+              <Button
+                onClick={() => handleBooking(doc)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Calendar size={16} /> Book Appointment
+              </Button>
+            </div>
           </div>
         ))}
         {doctors.length > doctorsPerPage && (
@@ -229,8 +256,17 @@ const DoctorSearchPage = ({ defaultSpecialty = "" }) => {
     <Button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Prev</Button>
     <Button disabled={currentPage * doctorsPerPage >= doctors.length} onClick={() => setCurrentPage(p => p + 1)}>Next</Button>
   </div>
-)}
+        )}
       </div>
+
+      {/* Booking Modal */}
+      {showBooking && selectedDoctor && (
+        <DoctorBooking
+          doctor={selectedDoctor}
+          onClose={closeBooking}
+          onBookingSuccess={handleBookingSuccess}
+        />
+      )}
     </div>
   );
 };
