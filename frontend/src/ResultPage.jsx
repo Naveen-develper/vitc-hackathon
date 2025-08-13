@@ -47,12 +47,12 @@ const ResultsPage = () => {
         symptoms: topSymptoms,
         diagnosis: disease || bestCond,
         confidence: Math.round((bestScore || 1) * 100),
-        recommendations: [
+        recommendations: processedData.recommendations || [
           `Consult a ${specialty}`,
           'Follow a healthy lifestyle',
           'Get relevant tests done',
         ],
-        suggested_tests: ['Blood Test', 'Imaging', 'Consultation'],
+        suggested_tests: processedData.suggested_tests || ['Blood Test', 'Imaging', 'Consultation'],
         specialty,
         timestamp: new Date().toISOString(),
         report: reportText,
@@ -103,12 +103,12 @@ const ResultsPage = () => {
           symptoms,
           diagnosis: reportDataRaw.disease || bestCond,
           confidence: Math.round(bestScore * 100),
-          recommendations: [
+          recommendations: reportDataRaw.recommendations || [
             `Consult a ${specialty}`,
             'Follow a healthy lifestyle',
             'Get relevant tests done',
           ],
-          suggested_tests: ['Blood Test', 'Imaging', 'Consultation'],
+          suggested_tests: reportDataRaw.suggested_tests || ['Blood Test', 'Imaging', 'Consultation'],
           specialty,
           timestamp: new Date().toISOString(),
           report: reportDataRaw.report || '',
