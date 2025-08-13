@@ -1,4 +1,4 @@
-# 🩺 MediVision AI - Medical Assistant AI Platform
+# 🩺 Maruthuvam AI - Medical Assistant AI Platform
 
 ## 📸 Overview
 

@@ -89,7 +89,7 @@ const LandingPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight mb-2">Advanced Features</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              MediVision AI combines cutting-edge technology with medical expertise to deliver unparalleled diagnostic assistance.
+              Maruthuvam AI combines cutting-edge technology with medical expertise to deliver unparalleled diagnostic assistance.
             </p>
           </div>
 
@@ -191,7 +191,7 @@ const LandingPage = () => {
                 Ready to Transform Your Diagnostic Workflow?
               </h2>
               <p className="text-slate-600 mb-8 max-w-xl mx-auto">
-                Join thousands of medical professionals already using MediVision AI to improve accuracy and save time.
+                Join thousands of medical professionals already using Maruthuvam AI to improve accuracy and save time.
               </p>
               <Button
                 asChild
@@ -254,7 +254,7 @@ const LandingPage = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold tracking-tight mb-2">What Our Users Say</h2>
               <p className="text-slate-600 max-w-2xl mx-auto">
-                Hear from our satisfied users about how MediVision AI has transformed their diagnostic processes.
+                Hear from our satisfied users about how Maruthuvam AI has transformed their diagnostic processes.
               </p>
             </div>
           </div>

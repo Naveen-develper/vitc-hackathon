@@ -47,7 +47,7 @@ latest_reports = {}
 # Startup: No ML models needed - using Gemini API only
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Starting MediVision AI with Gemini API...")
+    print("Starting Maruthuvam AI with Gemini API...")
     yield
     print("Shutting down...")
 
