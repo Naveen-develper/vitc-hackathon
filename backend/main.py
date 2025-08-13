@@ -173,12 +173,12 @@ async def generate_report(
         disease = "Analysis Complete"
         
         os.remove(temp_path)
-        
+
         # Store the report in a global variable
         latest_reports[modality] = {
-            "disease": disease,
-            "symptoms": symptoms,
-            "report": report
+        "disease": disease,
+        "symptoms": symptoms,
+        "report": report
         }
         
         return JSONResponse(content={
@@ -246,7 +246,7 @@ async def generate_report_ct2d(file: UploadFile = File(...)):
         symptoms = ["Tumor", "No Tumor", "Abnormal Growth"]
         
         os.remove(temp_path)
-        
+
         # Generate report using Gemini
         report = f"""
         Condition Detected: {symptoms[0]}
@@ -324,9 +324,9 @@ async def generate_report_ct3d(file: UploadFile = File(...)):
         
         Disclaimer: This is an AI-generated preliminary analysis. Please consult a certified medical professional for diagnosis.
         """
-        
+
         os.remove(temp_path)
-        
+
         # Store the report
         latest_reports["ct3d"] = {
             "Symptom": "3D Analysis Required",
@@ -380,9 +380,9 @@ async def generate_report_mri3d(file: UploadFile = File(...)):
         
         Disclaimer: This is an AI-generated preliminary analysis. Please consult a certified medical professional for diagnosis.
         """
-        
+
         os.remove(temp_path)
-        
+
         # Store the report
         latest_reports["mri3d"] = {
             "Symptom": "3D Analysis Required",
