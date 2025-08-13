@@ -4,7 +4,7 @@ import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Send } from "lucide-react";
 
-const BASE_API_URL = "http://127.0.0.1:8000"; // Update as needed
+const BASE_API_URL = "http://127.0.0.1:8001"; // Update as needed
 
 export default function ChatSupport() {
   const [messages, setMessages] = useState([
