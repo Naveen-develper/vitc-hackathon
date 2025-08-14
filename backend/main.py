@@ -30,6 +30,16 @@ load_dotenv()
 # from services.ultrasound_service import process_ultrasound, init_ultrasound_model
 # from services.mri_service import process_mri, init_mri_models
 
+# Import patient management modules
+from routers.patient_router import router as patient_router
+from services.patient_service import PatientService
+from services.medical_records_service import MedicalRecordsService
+
+# Import admin dashboard modules
+from routers.admin_router import router as admin_router
+from services.admin_service import AdminService
+from models.admin_models import ActivityType, LogLevel
+
 # Initialize Google GenAI Client (multimodal)
 # pip install google-generativeai
 import google.generativeai as genai
@@ -84,6 +94,12 @@ app.add_middleware(
     allow_headers=["*"],    # allow all headers
 )
 
+# Include patient management router
+app.include_router(patient_router)
+
+# Include admin dashboard router
+app.include_router(admin_router)
+
 
 # No prompt templates needed - using direct Gemini prompts for each endpoint
 # No need for extract_top_symptoms function - using direct Gemini analysis
@@ -95,7 +111,25 @@ app.add_middleware(
 
 @app.post("/predict/xray/")
 async def predict_xray(file: UploadFile = File(...)):
+    # Initialize admin service for logging
+    admin_service = AdminService()
+    await admin_service.initialize()
+    
+    # Log user activity
+    await admin_service.log_user_activity(
+        activity_type=ActivityType.IMAGE_UPLOAD,
+        description="X-ray image uploaded for analysis",
+        metadata={"file_name": file.filename, "file_type": file.content_type}
+    )
+    
     if file.content_type not in ["image/jpeg", "image/png", "image/bmp"]:
+        await admin_service.log_system_event(
+            LogLevel.WARNING,
+            "validation",
+            f"Invalid file type uploaded: {file.content_type}",
+            metadata={"file_name": file.filename}
+        )
+        await admin_service.cleanup()
         raise HTTPException(status_code=400, detail="Unsupported file type.")
 
     temp_path = f"temp_{file.filename}"
@@ -106,6 +140,13 @@ async def predict_xray(file: UploadFile = File(...)):
         # Read image bytes for Gemini analysis
         with open(temp_path, "rb") as f:
             img_bytes = f.read()
+        
+        # Log analysis request
+        await admin_service.log_user_activity(
+            activity_type=ActivityType.ANALYSIS_REQUEST,
+            description="X-ray analysis requested via Gemini AI",
+            metadata={"modality": "xray", "file_name": file.filename}
+        )
         
         # Use Gemini to analyze X-ray directly
         prompt = """
@@ -174,13 +215,72 @@ async def predict_xray(file: UploadFile = File(...)):
         global latest_xray_results
         latest_xray_results = {label: float(prob) for label, prob in predictions}
         
+        # Create medical record if patient_id is provided
+        medical_record = None
+        if hasattr(file, 'patient_id') and file.patient_id:
+            try:
+                medical_records_service = MedicalRecordsService()
+                await medical_records_service.initialize()
+                
+                medical_record_data = {
+                    "record_type": "xray",
+                    "modality": "xray",
+                    "diagnosis": predictions[0][0] if predictions else "Analysis completed",
+                    "symptoms": [pred[0] for pred in predictions[:3]],
+                    "findings": analysis,
+                    "recommendations": [],
+                    "suggested_tests": [],
+                    "confidence_score": predictions[0][1] if predictions else 0.0,
+                    "doctor_notes": "AI-generated analysis using Gemini Pro"
+                }
+                
+                medical_record = await medical_records_service.create_medical_record(
+                    file.patient_id, medical_record_data, file
+                )
+                await medical_records_service.cleanup()
+                
+                # Log medical record creation
+                await admin_service.log_user_activity(
+                    activity_type=ActivityType.MEDICAL_RECORD_CREATION,
+                    description="Medical record created for X-ray analysis",
+                    metadata={"patient_id": file.patient_id, "record_id": medical_record["id"]}
+                )
+                
+            except Exception as e:
+                print(f"Failed to create medical record: {e}")
+                await admin_service.log_system_event(
+                    LogLevel.ERROR,
+                    "medical_records",
+                    f"Failed to create medical record: {str(e)}",
+                    metadata={"patient_id": file.patient_id}
+                )
+        
+        # Log successful analysis
+        await admin_service.log_user_activity(
+            activity_type=ActivityType.ANALYSIS_REQUEST,
+            description="X-ray analysis completed successfully",
+            metadata={"conditions_found": len(predictions), "confidence": predictions[0][1] if predictions else 0.0}
+        )
+        
+        await admin_service.cleanup()
+        
         return JSONResponse(content={
             "predictions": predictions, 
             "gemini_analysis": analysis,
+            "medical_record_id": medical_record["id"] if medical_record else None,
             "note": "Analysis powered by Gemini AI - Real conditions detected"
         })
         
     except Exception as e:
+        # Log error
+        await admin_service.log_system_event(
+            LogLevel.ERROR,
+            "xray_prediction",
+            f"Error in X-ray prediction: {str(e)}",
+            metadata={"file_name": file.filename}
+        )
+        await admin_service.cleanup()
+        
         if os.path.exists(temp_path): os.remove(temp_path)
         raise HTTPException(status_code=500, detail=str(e))
 

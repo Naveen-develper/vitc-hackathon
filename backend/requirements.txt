@@ -26,3 +26,5 @@ uvicorn
 python-dotenv
 fastapi
 fastapi-users
+asyncpg
+email-validator

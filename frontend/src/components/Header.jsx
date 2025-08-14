@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "./ui/button"
 import { ModeToggle } from './ui/mode-toggle';
-import { Activity, FileText, Home } from 'lucide-react';
+import { Activity, FileText, Home, Shield } from 'lucide-react';
 
 const Header = () => {
   return (
@@ -29,6 +29,10 @@ const Header = () => {
           <Link to="/appointments" className="text-sm font-medium transition-colors hover:text-blue-600 flex items-center gap-2">
             <Activity className="h-4 w-4" />
             Appointments
+          </Link>
+          <Link to="/admin" className="text-sm font-medium transition-colors hover:text-blue-600 flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Admin
           </Link>
         </nav>
         

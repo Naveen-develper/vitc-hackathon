@@ -9,6 +9,7 @@ import Contact from './Contact';
 import ResultChatPage from './ResultChatPage';
 import DoctorSearchPage from './DoctorSearchPage';
 import AppointmentManager from './AppointmentManager';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   // Global state for selected image type and processed data
@@ -43,6 +44,7 @@ function App() {
           <Route path="/resultchat" element={<ResultChatPage />} />
           <Route path="/search-doctor" element={<DoctorSearchPage />} />
           <Route path="/appointments" element={<AppointmentManager />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path='/contact' element={<Contact/>} />
         </Routes>
       </main>
