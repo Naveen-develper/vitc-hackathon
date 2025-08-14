@@ -173,10 +173,3 @@ npm run dev
 5. Open a Pull Request 🚀
 
 ---
-
-**  ⚙️
-
-<!-- ## 🧭 Project Status
-
-> Alpha 🚧 – Core features implemented, refining UI/UX & robustness underway. -->
-# vitai-hackathon
