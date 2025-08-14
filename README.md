@@ -151,28 +151,6 @@ npm run dev
 
 ---
 
-## 📸 UI Preview
-
-- Landing Page
-<img src="0.png"/>
-- File Upload
-<img src="1.png"/>
-- Results Page
-<img src="2.png"/>
-
----
-
-## ✍️ Authors
-
-* **Sumit Singh** (Model Training + Backend Development)
-* **Somil Gupta** (Frontend + Backend Integrations)
-* **Abhishek** (Prompt Designing + chatbot)
-
----
-
-## 📜 License
-
-MIT License © 2025
 
 ---
 
@@ -195,10 +173,3 @@ MIT License © 2025
 5. Open a Pull Request 🚀
 
 ---
-
-🧱 Design and Developed by Team **CodeGenius**  ⚙️
-
-<!-- ## 🧭 Project Status
-
-> Alpha 🚧 – Core features implemented, refining UI/UX & robustness underway. -->
-# vitai-hackathon
