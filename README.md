@@ -151,19 +151,6 @@ npm run dev
 
 ---
 
-## 📸 UI Preview
-
-- Landing Page
-<img src="0.png"/>
-- File Upload
-<img src="1.png"/>
-- Results Page
-<img src="2.png"/>
-
----
-
-
-MIT License © 2025
 
 ---
 
