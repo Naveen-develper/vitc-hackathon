@@ -52,7 +52,8 @@ const UploadPage = ({ selectedImageType, setSelectedImageType, setProcessedData 
       predictionEndpoint = `${BASE_API_URL}/predict/ct/3d/`;
       reportEndpoint = '';  // Same — prediction handles everything
     } else if (selectedImageType === 'mri_2d') {
-      predictionEndpoint = `${BASE_API_URL}/predict/mri/2d/`;
+      // Use the generic generate-report endpoint for MRI 2D since there's no specific predict endpoint
+      predictionEndpoint = `${BASE_API_URL}/generate-report/mri/`;
       reportEndpoint = '';  // Not needed separately — prediction includes report
     } else if (selectedImageType === 'mri_3d') {
       predictionEndpoint = `${BASE_API_URL}/predict/mri/3d/`;
