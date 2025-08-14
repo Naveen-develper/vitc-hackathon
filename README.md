@@ -162,15 +162,6 @@ npm run dev
 
 ---
 
-## ✍️ Authors
-
-* **Sumit Singh** (Model Training + Backend Development)
-* **Somil Gupta** (Frontend + Backend Integrations)
-* **Abhishek** (Prompt Designing + chatbot)
-
----
-
-## 📜 License
 
 MIT License © 2025
 
@@ -196,7 +187,7 @@ MIT License © 2025
 
 ---
 
-🧱 Design and Developed by Team **CodeGenius**  ⚙️
+**  ⚙️
 
 <!-- ## 🧭 Project Status
 
